@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus CO₂ · Papel e insumos</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="marca">
+      <span class="logo">CO₂</span>
+      <div>
+        <h1>Campus CO₂ — UTN FRC</h1>
+        <p>Dimensión 14 · Papel, insumos y servicios operativos · Alcance 3</p>
+      </div>
+    </div>
+    <span id="modo-api" class="badge"></span>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab activa" data-tab="carga" role="tab">Cargar datos</button>
+    <button class="tab" data-tab="registros" role="tab">Registros</button>
+    <button class="tab" data-tab="indicadores" role="tab">Indicadores</button>
+  </nav>
+
+  <main>
+    <div id="mensaje" class="mensaje oculto" role="status"></div>
+
+    <!-- ============ CARGA ============ -->
+    <section id="tab-carga" class="panel">
+      <div class="grid-2">
+        <form id="form-carga" class="card" novalidate>
+          <h2>Nuevo dato de actividad</h2>
+
+          <div class="fila">
+            <label>Período (año)
+              <select name="periodo_id" required></select>
+            </label>
+            <label>Edificio
+              <select name="edificio_id" required></select>
+            </label>
+          </div>
+
+          <label>Insumo
+            <select name="insumo_codigo" required></select>
+          </label>
+
+          <div class="fila">
+            <label>Cantidad
+              <input type="number" name="cantidad" min="0" step="any" required />
+            </label>
+            <label>Unidad
+              <select name="unidad" required></select>
+            </label>
+          </div>
+
+          <label id="campo-gramaje">Gramaje (g/m²)
+            <input type="number" name="gramaje" min="40" max="300" step="1" value="75" />
+          </label>
+
+          <details id="estimador-examenes" class="estimador">
+            <summary>Estimar papel de exámenes finales</summary>
+            <div class="fila">
+              <label>Hojas por examen <input type="number" id="ex-hojas" value="3" min="1" /></label>
+              <label>Alumnos por mesa <input type="number" id="ex-alumnos" value="20" min="1" /></label>
+            </div>
+            <div class="fila">
+              <label>Cátedras <input type="number" id="ex-catedras" value="100" min="1" /></label>
+              <label>Turnos por año <input type="number" id="ex-turnos" value="6" min="1" /></label>
+            </div>
+            <p class="ayuda">Hojas = hojas × alumnos × cátedras × turnos = <strong id="ex-total">0</strong></p>
+            <button type="button" id="ex-usar" class="btn secundario">Usar este valor</button>
+          </details>
+
+          <div class="fila">
+            <label>Fecha del comprobante
+              <input type="date" name="fecha" required />
+            </label>
+            <label>N.º de comprobante
+              <input type="text" name="comprobante" maxlength="50" placeholder="Factura / OC" />
+            </label>
+          </div>
+
+          <label>Calidad del dato
+            <select name="calidad" required>
+              <option value="A">A — Medido con comprobante</option>
+              <option value="B">B — Registro interno sin comprobante</option>
+              <option value="C">C — Estimación con supuestos</option>
+            </select>
+          </label>
+
+          <label>Observaciones
+            <textarea name="observaciones" rows="2" maxlength="500"></textarea>
+          </label>
+
+          <div class="acciones">
+            <button type="submit" class="btn">Calcular y guardar</button>
+            <button type="reset" class="btn secundario">Limpiar</button>
+          </div>
+        </form>
+
+        <aside class="card preview">
+          <h2>Cálculo</h2>
+          <p class="ayuda">Se actualiza mientras completás el formulario.</p>
+          <div id="preview-resultado" class="resultado-grande">—</div>
+          <ol id="preview-pasos" class="pasos"></ol>
+          <div id="preview-factor" class="ayuda"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ REGISTROS ============ -->
+    <section id="tab-registros" class="panel oculto">
+      <div class="card">
+        <div class="cabecera-card">
+          <h2>Registros cargados</h2>
+          <div class="acciones">
+            <select id="filtro-periodo-reg"></select>
+            <button id="btn-ejemplos" class="btn secundario">Cargar datos de ejemplo</button>
+          </div>
+        </div>
+        <div class="tabla-scroll">
+          <table id="tabla-registros">
+            <thead>
+              <tr>
+                <th>Año</th><th>Edificio</th><th>Insumo</th><th>Cantidad</th>
+                <th>kg CO₂e</th><th>Calidad</th><th>Trazabilidad</th><th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INDICADORES ============ -->
+    <section id="tab-indicadores" class="panel oculto">
+      <div class="cabecera-card">
+        <h2>Indicadores</h2>
+        <label class="inline">Período
+          <select id="filtro-periodo-ind"></select>
+        </label>
+      </div>
+
+      <div id="kpis" class="kpis"></div>
+
+      <div class="grid-2">
+        <div class="card"><h3>Distribución por categoría</h3><canvas id="g-categorias"></canvas></div>
+        <div class="card"><h3>Emisiones por edificio</h3><canvas id="g-edificios"></canvas></div>
+        <div class="card"><h3>Evolución anual (t CO₂e)</h3><canvas id="g-evolucion"></canvas></div>
+        <div class="card"><h3>Papel virgen vs reciclado (kg)</h3><canvas id="g-papel"></canvas></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">Cátedra Green Software · Trabajo de investigación Campus CO₂</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/calculo.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/carga.js"></script>
+  <script src="js/registros.js"></script>
+  <script src="js/visualizacion.js"></script>
+  <script>CO2.iniciar();</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "tpi2-green-software",
+  "version": "1.0.0",
+  "description": "Campus CO2 - Dimensión 14: Papel, insumos y servicios operativos (UTN FRC, Cátedra Green Software)",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
