@@ -3,158 +3,296 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
   <title>Campus CO₂ · Papel e insumos</title>
+  <meta name="description" content="Carga, cálculo y monitoreo de la huella de carbono de papel, insumos y servicios operativos de la UTN FRC." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="marca">
-      <span class="logo">CO₂</span>
-      <div>
-        <h1>Campus CO₂ — UTN FRC</h1>
-        <p>Dimensión 14 · Papel, insumos y servicios operativos · Alcance 3</p>
+  <a class="saltar" href="#contenido">Ir al contenido</a>
+
+  <div class="app">
+    <!-- ================= MENÚ LATERAL ================= -->
+    <aside class="lateral">
+      <div class="marca">
+        <svg class="marca-icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14Z" /><path d="M5 19 13 11" /></svg>
+        <div>
+          <p class="marca-nombre">Campus CO<sub>2</sub></p>
+          <p class="marca-sub">UTN Facultad Regional Córdoba</p>
+        </div>
       </div>
+
+      <div class="dimension">
+        <span class="dimension-num">14</span>
+        <span>Papel, insumos y servicios operativos</span>
+      </div>
+
+      <nav class="menu" aria-label="Secciones">
+        <a class="menu-item" href="#panel" data-vista="panel">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
+          Panel
+        </a>
+        <a class="menu-item" href="#carga" data-vista="carga">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          Cargar compra
+        </a>
+        <a class="menu-item" href="#registros" data-vista="registros">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+          Registros
+        </a>
+        <a class="menu-item" href="#factores" data-vista="factores">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5ZM20 19v3H6.5" /></svg>
+          Factores y referencias
+        </a>
+      </nav>
+
+      <div class="lateral-pie">
+        <p id="estado-api" class="estado" role="status"></p>
+        <p class="lateral-nota">Alcance 3 · GHG Protocol, categoría 1</p>
+      </div>
+    </aside>
+
+    <!-- ================= CONTENIDO ================= -->
+    <div class="principal">
+      <header class="cabecera">
+        <div>
+          <p class="miga">Dimensión 14 <span aria-hidden="true">/</span> <span id="miga-vista">Panel</span></p>
+          <h1 id="titulo-vista">Panel</h1>
+        </div>
+        <div class="cabecera-acciones">
+          <label class="selector" id="selector-anio">Año
+            <select id="filtro-periodo-ind"></select>
+          </label>
+        </div>
+      </header>
+
+      <main id="contenido">
+        <!-- ============ PANEL ============ -->
+        <section id="vista-panel" class="vista" aria-labelledby="titulo-vista">
+          <div id="panel-vacio" class="vacio" hidden>
+            <p class="vacio-titulo" id="vacio-titulo"></p>
+            <p id="vacio-texto"></p>
+            <div class="acciones">
+              <a class="boton" href="#carga">Cargar una compra</a>
+              <button type="button" class="boton boton-secundario" data-ejemplos>Probar con datos de ejemplo</button>
+            </div>
+          </div>
+
+          <div id="panel-datos">
+            <dl id="kpis" class="stats"></dl>
+            <p id="resumen" class="resumen"></p>
+
+            <div class="graficos">
+              <figure class="tarjeta grafico">
+                <figcaption><span>Emisiones por categoría</span><small>kg CO₂e del año</small></figcaption>
+                <div class="lienzo"><canvas id="g-categorias" role="img" aria-label="Distribución de emisiones por categoría"></canvas></div>
+              </figure>
+              <figure class="tarjeta grafico">
+                <figcaption><span>Comparación con el año anterior</span><small>kg CO₂e por categoría</small></figcaption>
+                <div class="lienzo"><canvas id="g-comparacion" role="img" aria-label="Comparación por categoría con el año anterior"></canvas></div>
+              </figure>
+              <figure class="tarjeta grafico">
+                <figcaption><span>Evolución anual</span><small>t CO₂e</small></figcaption>
+                <div class="lienzo"><canvas id="g-evolucion" role="img" aria-label="Evolución anual de emisiones"></canvas></div>
+              </figure>
+              <figure class="tarjeta grafico">
+                <figcaption><span>Papel virgen y reciclado</span><small>kg comprados por año</small></figcaption>
+                <div class="lienzo"><canvas id="g-papel" role="img" aria-label="Papel virgen y reciclado por año"></canvas></div>
+              </figure>
+              <figure class="tarjeta grafico grafico-ancho">
+                <figcaption><span>Emisiones por edificio</span><small>kg CO₂e del año</small></figcaption>
+                <div class="lienzo lienzo-bajo"><canvas id="g-edificios" role="img" aria-label="Emisiones por edificio"></canvas></div>
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ CARGA ============ -->
+        <section id="vista-carga" class="vista" aria-labelledby="titulo-vista" hidden>
+          <div class="carga">
+            <form id="form-carga" class="tarjeta" novalidate>
+              <div id="aviso-edicion" class="aviso-edicion" hidden>
+                <span>Estás editando un registro existente.</span>
+                <button type="button" id="cancelar-edicion" class="boton boton-texto">Cancelar edición</button>
+              </div>
+
+              <fieldset>
+                <legend>Qué se compró</legend>
+                <label class="campo">Insumo
+                  <select name="insumo_codigo" required></select>
+                </label>
+                <div class="fila">
+                  <label class="campo">Cantidad
+                    <input type="number" name="cantidad" min="0" step="any" inputmode="decimal" required />
+                  </label>
+                  <label class="campo">Unidad
+                    <select name="unidad" required></select>
+                  </label>
+                </div>
+                <label class="campo" id="campo-gramaje">Gramaje del papel (g/m²)
+                  <input type="number" name="gramaje" min="40" max="300" step="1" value="75" />
+                  <span class="ayuda">Figura en el envoltorio de la resma. Si no lo sabés, dejá 75.</span>
+                </label>
+                <label class="campo" id="campo-cambio" hidden>Tipo de cambio (ARS por USD)
+                  <input type="number" name="tipo_cambio" min="0" step="any" inputmode="decimal" />
+                  <span class="ayuda">El del día del comprobante. El factor de servicios está expresado en dólares.</span>
+                </label>
+
+                <details id="estimador-examenes" class="estimador">
+                  <summary>Estimar las hojas de exámenes finales</summary>
+                  <div class="fila fila-4">
+                    <label class="campo">Hojas por examen <input type="number" id="ex-hojas" value="3" min="1" /></label>
+                    <label class="campo">Alumnos por mesa <input type="number" id="ex-alumnos" value="20" min="1" /></label>
+                    <label class="campo">Cátedras <input type="number" id="ex-catedras" value="100" min="1" /></label>
+                    <label class="campo">Turnos por año <input type="number" id="ex-turnos" value="6" min="1" /></label>
+                  </div>
+                  <div class="estimador-pie">
+                    <p>Resultado: <strong id="ex-total" class="mono">0</strong> hojas</p>
+                    <button type="button" id="ex-usar" class="boton boton-secundario">Usar estas hojas</button>
+                  </div>
+                </details>
+              </fieldset>
+
+              <fieldset>
+                <legend>Dónde y cuándo</legend>
+                <div class="fila">
+                  <label class="campo">Año
+                    <select name="periodo_id" required></select>
+                  </label>
+                  <label class="campo">Edificio
+                    <select name="edificio_id" required></select>
+                  </label>
+                </div>
+                <label class="campo">Fecha del comprobante
+                  <input type="date" name="fecha" required />
+                  <span class="ayuda">Se elige desde el calendario, dentro del año seleccionado.</span>
+                </label>
+              </fieldset>
+
+              <fieldset>
+                <legend>Respaldo</legend>
+                <label class="campo">Número de comprobante
+                  <input type="text" name="comprobante" maxlength="50" placeholder="Ej.: FC B 0003-00012345" autocomplete="off" />
+                </label>
+                <div class="campo" role="radiogroup" aria-labelledby="calidad-titulo">
+                  <span id="calidad-titulo">Calidad del dato</span>
+                  <div class="segmentado">
+                    <label><input type="radio" name="calidad" value="A" checked /><span>A · Con comprobante</span></label>
+                    <label><input type="radio" name="calidad" value="B" /><span>B · Registro interno</span></label>
+                    <label><input type="radio" name="calidad" value="C" /><span>C · Estimación</span></label>
+                  </div>
+                </div>
+                <label class="campo">Observaciones
+                  <textarea name="observaciones" rows="2" maxlength="500" placeholder="Supuestos, prorrateos o aclaraciones"></textarea>
+                </label>
+              </fieldset>
+
+              <div class="acciones acciones-form">
+                <button type="submit" class="boton" id="btn-guardar">Guardar registro</button>
+                <button type="reset" class="boton boton-texto">Vaciar formulario</button>
+              </div>
+            </form>
+
+            <aside class="tarjeta calculo" aria-labelledby="calculo-titulo">
+              <div class="calculo-cabecera">
+                <h2 id="calculo-titulo">Cálculo en vivo</h2>
+                <span class="etiqueta">kg CO₂e = cantidad × conversión × factor</span>
+              </div>
+              <div aria-live="polite">
+                <p id="calculo-insumo" class="calculo-insumo">Elegí un insumo y escribí una cantidad.</p>
+                <ol id="preview-pasos" class="calculo-pasos"></ol>
+                <div class="calculo-total">
+                  <span>Total</span>
+                  <strong id="preview-resultado" class="mono">0 kg CO₂e</strong>
+                </div>
+                <p id="preview-evitadas" class="calculo-evitadas"></p>
+                <p id="preview-factor" class="calculo-fuente"></p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============ REGISTROS ============ -->
+        <section id="vista-registros" class="vista" aria-labelledby="titulo-vista" hidden>
+          <div class="tarjeta">
+            <div class="herramientas">
+              <div class="herramientas-filtros">
+                <label class="selector">Año <select id="filtro-periodo-reg"></select></label>
+                <label class="selector">Categoría <select id="filtro-categoria-reg"></select></label>
+              </div>
+              <div class="herramientas-acciones">
+                <button id="btn-importar" class="boton boton-secundario" type="button">Importar CSV</button>
+                <input id="archivo-csv" type="file" accept=".csv,text/csv" hidden />
+                <button id="btn-plantilla" class="boton boton-texto" type="button">Descargar plantilla</button>
+                <button id="btn-csv" class="boton boton-secundario" type="button">Exportar CSV</button>
+                <button id="btn-ejemplos" class="boton boton-texto" type="button" data-ejemplos>Datos de ejemplo</button>
+              </div>
+            </div>
+            <div id="resultado-importacion" class="importacion" hidden></div>
+            <div class="tabla-scroll">
+              <table id="tabla-registros">
+                <caption class="solo-lectores">Registros de compras con sus emisiones calculadas</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Año</th>
+                    <th scope="col">Edificio</th>
+                    <th scope="col">Insumo</th>
+                    <th scope="col" class="num">Cantidad</th>
+                    <th scope="col" class="num">kg CO₂e</th>
+                    <th scope="col">Calidad</th>
+                    <th scope="col">Cálculo</th>
+                    <th scope="col"><span class="solo-lectores">Acciones</span></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot></tfoot>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ FACTORES ============ -->
+        <section id="vista-factores" class="vista" aria-labelledby="titulo-vista" hidden>
+          <div class="tarjeta">
+            <div class="tarjeta-cabecera">
+              <h2>Factores de emisión</h2>
+              <p>Cada resultado guarda el número de factor que se aplicó. Los marcados como supuesto no tienen un valor oficial verificado.</p>
+            </div>
+            <div class="tabla-scroll">
+              <table id="tabla-factores">
+                <thead>
+                  <tr>
+                    <th scope="col">N.º</th>
+                    <th scope="col">Insumo</th>
+                    <th scope="col" class="num">Valor</th>
+                    <th scope="col">Unidad</th>
+                    <th scope="col">Fuente</th>
+                    <th scope="col">Estado</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tarjeta">
+            <div class="tarjeta-cabecera">
+              <h2>Datos de referencia</h2>
+              <p>La matrícula se usa para los indicadores por estudiante. Cargá el dato que informe Secretaría Académica.</p>
+            </div>
+            <form id="form-referencias" class="referencias"></form>
+          </div>
+        </section>
+      </main>
+
+      <footer class="pie">Cátedra Green Software, UTN FRC. Trabajo de investigación Campus CO₂.</footer>
     </div>
-    <span id="modo-api" class="badge"></span>
-  </header>
+  </div>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab activa" data-tab="carga" role="tab">Cargar datos</button>
-    <button class="tab" data-tab="registros" role="tab">Registros</button>
-    <button class="tab" data-tab="indicadores" role="tab">Indicadores</button>
-  </nav>
-
-  <main>
-    <div id="mensaje" class="mensaje oculto" role="status"></div>
-
-    <!-- ============ CARGA ============ -->
-    <section id="tab-carga" class="panel">
-      <div class="grid-2">
-        <form id="form-carga" class="card" novalidate>
-          <h2>Nuevo dato de actividad</h2>
-
-          <div class="fila">
-            <label>Período (año)
-              <select name="periodo_id" required></select>
-            </label>
-            <label>Edificio
-              <select name="edificio_id" required></select>
-            </label>
-          </div>
-
-          <label>Insumo
-            <select name="insumo_codigo" required></select>
-          </label>
-
-          <div class="fila">
-            <label>Cantidad
-              <input type="number" name="cantidad" min="0" step="any" required />
-            </label>
-            <label>Unidad
-              <select name="unidad" required></select>
-            </label>
-          </div>
-
-          <label id="campo-gramaje">Gramaje (g/m²)
-            <input type="number" name="gramaje" min="40" max="300" step="1" value="75" />
-          </label>
-
-          <details id="estimador-examenes" class="estimador">
-            <summary>Estimar papel de exámenes finales</summary>
-            <div class="fila">
-              <label>Hojas por examen <input type="number" id="ex-hojas" value="3" min="1" /></label>
-              <label>Alumnos por mesa <input type="number" id="ex-alumnos" value="20" min="1" /></label>
-            </div>
-            <div class="fila">
-              <label>Cátedras <input type="number" id="ex-catedras" value="100" min="1" /></label>
-              <label>Turnos por año <input type="number" id="ex-turnos" value="6" min="1" /></label>
-            </div>
-            <p class="ayuda">Hojas = hojas × alumnos × cátedras × turnos = <strong id="ex-total">0</strong></p>
-            <button type="button" id="ex-usar" class="btn secundario">Usar este valor</button>
-          </details>
-
-          <div class="fila">
-            <label>Fecha del comprobante
-              <input type="date" name="fecha" required />
-            </label>
-            <label>N.º de comprobante
-              <input type="text" name="comprobante" maxlength="50" placeholder="Factura / OC" />
-            </label>
-          </div>
-
-          <label>Calidad del dato
-            <select name="calidad" required>
-              <option value="A">A — Medido con comprobante</option>
-              <option value="B">B — Registro interno sin comprobante</option>
-              <option value="C">C — Estimación con supuestos</option>
-            </select>
-          </label>
-
-          <label>Observaciones
-            <textarea name="observaciones" rows="2" maxlength="500"></textarea>
-          </label>
-
-          <div class="acciones">
-            <button type="submit" class="btn">Calcular y guardar</button>
-            <button type="reset" class="btn secundario">Limpiar</button>
-          </div>
-        </form>
-
-        <aside class="card preview">
-          <h2>Cálculo</h2>
-          <p class="ayuda">Se actualiza mientras completás el formulario.</p>
-          <div id="preview-resultado" class="resultado-grande">—</div>
-          <ol id="preview-pasos" class="pasos"></ol>
-          <div id="preview-factor" class="ayuda"></div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- ============ REGISTROS ============ -->
-    <section id="tab-registros" class="panel oculto">
-      <div class="card">
-        <div class="cabecera-card">
-          <h2>Registros cargados</h2>
-          <div class="acciones">
-            <select id="filtro-periodo-reg"></select>
-            <button id="btn-ejemplos" class="btn secundario">Cargar datos de ejemplo</button>
-          </div>
-        </div>
-        <div class="tabla-scroll">
-          <table id="tabla-registros">
-            <thead>
-              <tr>
-                <th>Año</th><th>Edificio</th><th>Insumo</th><th>Cantidad</th>
-                <th>kg CO₂e</th><th>Calidad</th><th>Trazabilidad</th><th></th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ INDICADORES ============ -->
-    <section id="tab-indicadores" class="panel oculto">
-      <div class="cabecera-card">
-        <h2>Indicadores</h2>
-        <label class="inline">Período
-          <select id="filtro-periodo-ind"></select>
-        </label>
-      </div>
-
-      <div id="kpis" class="kpis"></div>
-
-      <div class="grid-2">
-        <div class="card"><h3>Distribución por categoría</h3><canvas id="g-categorias"></canvas></div>
-        <div class="card"><h3>Emisiones por edificio</h3><canvas id="g-edificios"></canvas></div>
-        <div class="card"><h3>Evolución anual (t CO₂e)</h3><canvas id="g-evolucion"></canvas></div>
-        <div class="card"><h3>Papel virgen vs reciclado (kg)</h3><canvas id="g-papel"></canvas></div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="pie">Cátedra Green Software · Trabajo de investigación Campus CO₂</footer>
+  <div id="aviso" class="aviso" role="status" aria-live="polite" hidden></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="js/config.js"></script>
@@ -164,6 +302,7 @@
   <script src="js/app.js"></script>
   <script src="js/carga.js"></script>
   <script src="js/registros.js"></script>
+  <script src="js/factores.js"></script>
   <script src="js/visualizacion.js"></script>
   <script>CO2.iniciar();</script>
 </body>

@@ -47,3 +47,38 @@ Escala de calidad usada en el campo `fuente_datos`:
 | A | Dato medido con comprobante (factura, remito) |
 | B | Dato de registro interno sin comprobante |
 | C | Estimación con supuestos documentados |
+
+## 3.5 Cómo cargar lo relevado
+
+1. En la app, **Registros → Descargar plantilla** baja `plantilla-relevamiento-papel-insumos.csv` (se abre con Excel).
+2. Cada fila es una compra: año, edificio, código de insumo, cantidad, unidad, gramaje (solo papel), tipo de cambio (solo montos en pesos), fecha, comprobante, calidad (A/B/C) y observaciones.
+3. **Registros → Importar CSV** valida cada fila con las mismas reglas que el formulario. Las filas con errores no se importan y se informan con su número de fila y el motivo.
+4. La matrícula de cada año se carga en **Factores y referencias**.
+
+## 3.6 Modelo de nota para pedir los datos
+
+> **Asunto:** Pedido de información — Huella de carbono de la FRC (Cátedra Green Software)
+>
+> Estimados/as:
+>
+> Somos estudiantes de la cátedra Green Software (UTN FRC) y estamos midiendo la huella de carbono de la facultad, en la dimensión *papel, insumos y servicios operativos*. Les pedimos, si es posible, la siguiente información de los años 2023, 2024 y 2025:
+>
+> - Compras de **papel** (resmas por tamaño y gramaje, si es reciclado), con fecha y número de factura u orden de compra.
+> - Compras de **tóners y cartuchos** (cantidad por modelo).
+> - Compras de **artículos de librería** y **productos de limpieza** (cantidades o kg/litros).
+> - **Papel higiénico y toallas** (kg o cantidad de bultos y su peso).
+> - Monto anual pagado por **servicios tercerizados** (limpieza, imprenta, etc.).
+> - Si existe, a qué **edificio** se destinó cada compra.
+>
+> Nos sirve en el formato en que lo tengan (planilla, listado o copia de facturas). Los datos se usan solo para el trabajo académico y los resultados se compartirán con la facultad.
+>
+> Muchas gracias.
+> _Nombre, legajo y contacto del grupo_
+
+| Destinatario sugerido | Qué pedirle |
+|---|---|
+| Dirección de Compras / Suministros | Papel, tóners, librería, cartón |
+| Intendencia / Servicios generales | Limpieza, papel higiénico, bolsas, servicio tercerizado |
+| Bedelía y departamentos | Cantidad de mesas de examen, inscriptos por mesa, hojas por examen |
+| Secretaría Académica | Matrícula por año |
+| Secretaría Administrativa / Tesorería | Montos de servicios contratados |

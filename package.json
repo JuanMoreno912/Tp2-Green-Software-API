@@ -4,7 +4,9 @@
   "description": "Campus CO2 - Dimensión 14: Papel, insumos y servicios operativos (UTN FRC, Cátedra Green Software)",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch-path=server.js server.js --dev",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18"

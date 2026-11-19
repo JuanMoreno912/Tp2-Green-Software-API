@@ -48,6 +48,7 @@ erDiagram
         int fuente_datos_id FK
         decimal cantidad
         decimal gramaje_gm2
+        decimal tipo_cambio_ars_usd
         string comprobante
         date fecha
         string observaciones
@@ -90,7 +91,7 @@ erDiagram
 | codigo | varchar(30) | No | Código interno, ej. `PAPEL_VIRGEN` |
 | nombre | varchar(100) | No | Nombre legible |
 | categoria | varchar(40) | No | `papel`, `carton`, `impresion`, `libreria`, `limpieza`, `tissue`, `plastico`, `servicios` |
-| unidad_base_id | int (FK) | No | Unidad en la que está expresado el factor (kg, unidad, ARS) |
+| unidad_base_id | int (FK) | No | Unidad en la que está expresado el factor (kg, unidad, USD) |
 | contenido_reciclado_pct | decimal(5,2) | Sí | 0–100 |
 
 ### `conversion_unidad` (entidad propia)
@@ -116,6 +117,7 @@ erDiagram
 | fuente_datos_id | int (FK) | No | Factura, orden de compra, estimación… |
 | cantidad | decimal(14,4) | No | > 0 |
 | gramaje_gm2 | decimal(6,2) | Sí | Solo papel; por defecto 75 |
+| tipo_cambio_ars_usd | decimal(12,4) | Sí | Solo montos cargados en pesos; convierte ARS a USD para el factor de servicios |
 | comprobante | varchar(50) | Sí | N.º de factura / OC |
 | fecha | date | No | Fecha del comprobante |
 | observaciones | text | Sí | — |

@@ -36,10 +36,42 @@ window.CO2 = window.CO2 || {};
   }
   const demora = (data) => new Promise((r) => setTimeout(() => r(structuredClone(data)), 150));
 
+  // Matrícula editada por el usuario en modo prueba: { "2025": 9800, ... }
+  const KEY_MATRICULA = 'campusco2-dim14-matricula';
+  function leerMatricula() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY_MATRICULA)) || {};
+    } catch {
+      return {};
+    }
+  }
+
   // ---------- API pública ----------
   const api = {
     getEdificios: () => (cfg.USE_MOCK ? demora(CO2.mock.edificios) : http(cfg.ENDPOINTS.edificios)),
-    getPeriodos: () => (cfg.USE_MOCK ? demora(CO2.mock.periodos) : http(cfg.ENDPOINTS.periodos)),
+    getPeriodos: () => {
+      if (!cfg.USE_MOCK) return http(cfg.ENDPOINTS.periodos);
+      const editada = leerMatricula();
+      return demora(CO2.mock.periodos.map((p) => ({ ...p, matricula: editada[p.anio] ?? p.matricula })));
+    },
+
+    /** Guarda la matrícula de un año (solo modo prueba; con la API la provee la cátedra). */
+    async guardarMatricula(valores) {
+      if (!cfg.USE_MOCK) throw new Error('La matrícula la administra la API central');
+      try {
+        localStorage.setItem(KEY_MATRICULA, JSON.stringify(valores));
+      } catch (e) {
+        console.warn('No se pudo guardar la matrícula', e);
+      }
+    },
+
+    /** Reemplaza un registro existente (solo modo prueba). */
+    async actualizarRegistro(id, registro) {
+      if (!cfg.USE_MOCK) throw new Error('La edición todavía no está disponible en la API central');
+      const lista = leerLocal().map((r) => (r.id === id ? { ...registro, id } : r));
+      guardarLocal(lista);
+      return demora({ ...registro, id });
+    },
     getInsumos: () => (cfg.USE_MOCK ? demora(CO2.mock.insumos) : http(cfg.ENDPOINTS.insumos)),
     getFactores: () => (cfg.USE_MOCK ? demora(CO2.mock.factores) : http(cfg.ENDPOINTS.factores)),
 
@@ -72,6 +104,7 @@ window.CO2 = window.CO2 || {};
           unidad: registro.unidad,
           cantidad: registro.cantidad,
           gramaje_gm2: registro.gramaje,
+          tipo_cambio_ars_usd: registro.tipo_cambio || null,
           comprobante: registro.comprobante,
           fecha: registro.fecha,
           calidad: registro.calidad,
